@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jimmy the Orange Cat 🐱</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --orange:    #FF7A1F;
+      --orange2:   #FFB347;
+      --yellow:    #FFE566;
+      --cream:     #FFFBF0;
+      --pink:      #FFD6E0;
+      --blue:      #C8E6FF;
+      --green:     #C8F0C0;
+      --brown:     #5A3A20;
+      --brown-mid: #8B5E3C;
+      --white:     #FFFFFF;
+      --outline:   2px solid #8B6A4A;
+      --shadow:    4px 4px 0px rgba(139,106,74,0.35);
+      --shadow-sm: 2px 2px 0px rgba(139,106,74,0.3);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--cream);
+      font-family: 'Nunito', sans-serif;
+      color: var(--brown);
+      overflow-x: hidden;
+    }
+    body::before {
+      content:'🐾 🐾 🐾 🐾 🐾 🐾 🐾 🐾 🐾 🐾 🐾 🐾';
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      font-size:1.4rem; word-spacing:80px; line-height:120px;
+      letter-spacing:60px; opacity:0.04; pointer-events:none; z-index:0;
+    }
+
+    /* NAV */
+    header {
+      background: var(--orange);
+      border-bottom: var(--outline);
+      position: sticky; top:0; z-index:100;
+    }
+    .nav-inner {
+      max-width:980px; margin:0 auto; padding:0 20px;
+      height:60px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .logo {
+      font-family:'Fredoka One',cursive; font-size:1.2rem;
+      color:var(--white); display:flex; align-items:center; gap:8px;
+      text-shadow:2px 2px 0 rgba(74,47,26,0.25); text-decoration:none;
+    }
+    .logo-cat { font-size:1.5rem; animation:wiggle 3s ease-in-out infinite; display:inline-block; }
+    nav { display:flex; gap:6px; }
+    nav a {
+      font-family:'Fredoka One',cursive; font-size:0.88rem;
+      color:var(--white); text-decoration:none;
+      background:rgba(255,255,255,0.18); border:2px solid rgba(255,255,255,0.35);
+      border-radius:20px; padding:4px 14px;
+      transition:background 0.15s, transform 0.1s;
+    }
+    nav a:hover { background:rgba(255,255,255,0.35); transform:translateY(-2px); }
+    nav a.active { background:rgba(255,255,255,0.35); }
+
+    /* PAGES */
+    .page { display:none; position:relative; z-index:1; }
+    .page.active { display:block; }
+
+    /* ── HOME PAGE ── */
+    .hero {
+      max-width:980px; margin:0 auto;
+      padding:50px 20px 20px;
+      display:grid; grid-template-columns:1fr 260px; gap:20px; align-items:center;
+    }
+    .hero-bubble {
+      background:var(--white); border:var(--outline); border-radius:28px;
+      padding:36px 36px 32px; box-shadow:var(--shadow);
+      position:relative; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .hero-bubble::after {
+      content:''; position:absolute; right:-28px; top:50%; transform:translateY(-50%);
+      width:0; height:0;
+      border-top:14px solid transparent; border-bottom:14px solid transparent;
+      border-left:26px solid #8B6A4A;
+    }
+    .hero-bubble::before {
+      content:''; position:absolute; right:-22px; top:50%; transform:translateY(-50%);
+      width:0; height:0; z-index:1;
+      border-top:11px solid transparent; border-bottom:11px solid transparent;
+      border-left:22px solid var(--white);
+    }
+    .badge {
+      display:inline-block; background:var(--yellow); border:var(--outline);
+      border-radius:20px; padding:3px 14px; font-size:0.78rem;
+      font-weight:800; letter-spacing:0.04em; margin-bottom:14px; box-shadow:var(--shadow-sm);
+    }
+    .hero-title {
+      font-family:'Fredoka One',cursive;
+      font-size:clamp(2rem,5vw,3rem); line-height:1.15;
+      color:var(--brown); margin-bottom:6px;
+    }
+    .hero-title .accent { color:var(--orange); }
+    .hero-zh { font-size:1rem; font-weight:700; color:var(--brown-mid); margin-bottom:14px; font-style:italic; }
+    .hero-desc { font-size:0.95rem; line-height:1.7; color:var(--brown-mid); margin-bottom:22px; }
+    .btn {
+      display:inline-block; font-family:'Fredoka One',cursive; font-size:1rem;
+      color:var(--white); background:var(--orange); border:var(--outline);
+      border-radius:14px; padding:10px 26px; text-decoration:none;
+      box-shadow:var(--shadow-sm); transition:transform 0.12s, box-shadow 0.12s;
+      cursor:pointer;
+    }
+    .btn:hover { transform:translate(-2px,-2px); box-shadow:4px 4px 0 rgba(139,106,74,0.5); }
+    .btn.yellow { background:var(--yellow); color:var(--brown); }
+
+    /* HERO CARDS */
+    .hero-card-stack { display:flex; flex-direction:column; gap:14px; animation:popIn 0.7s 0.15s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .info-card {
+      background:var(--white); border:var(--outline); border-radius:16px;
+      padding:14px 18px; display:flex; align-items:center; gap:14px;
+      box-shadow:var(--shadow-sm); transition:transform 0.15s;
+    }
+    .info-card:hover { transform:translateX(4px); }
+    .ic-top { background:var(--yellow); }
+    .ic-mid { background:var(--blue); }
+    .ic-bot { background:var(--pink); }
+    .ic-emoji { font-size:1.8rem; flex-shrink:0; }
+    .ic-label { font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--brown-mid); margin-bottom:2px; }
+    .ic-val { font-family:'Fredoka One',cursive; font-size:0.92rem; color:var(--brown); }
+
+    /* WAVE */
+    .wave-divider { width:100%; line-height:0; position:relative; z-index:1; margin-top:10px; }
+    .wave-divider svg { display:block; width:100%; }
+    .color-band {
+      background:var(--orange); padding:12px 20px;
+      display:flex; justify-content:center; gap:28px; flex-wrap:wrap;
+    }
+    .band-item { font-family:'Fredoka One',cursive; font-size:0.9rem; color:var(--white); display:flex; align-items:center; gap:6px; }
+
+    /* SECTION */
+    .section { max-width:980px; margin:0 auto; padding:44px 20px; position:relative; z-index:1; }
+    .section-head { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+    .section-title { font-family:'Fredoka One',cursive; font-size:1.6rem; color:var(--brown); }
+    .section-emoji { font-size:1.8rem; animation:bounce 1.8s ease-in-out infinite; display:inline-block; }
+    .section-zh {
+      font-size:0.82rem; font-weight:700; color:var(--brown-mid);
+      background:var(--yellow); border:var(--outline); border-radius:10px;
+      padding:2px 10px; box-shadow:var(--shadow-sm);
+    }
+
+    /* POST CARDS */
+    .cards-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .post-card {
+      background:var(--white); border:var(--outline); border-radius:20px;
+      overflow:hidden; cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform 0.15s, box-shadow 0.15s;
+      animation:popIn 0.5s ease both;
+    }
+    .post-card:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 rgba(139,106,74,0.35); }
+    .card-top { height:90px; display:flex; align-items:center; justify-content:center; font-size:2.8rem; }
+    .card-top.c1 { background:linear-gradient(135deg,var(--yellow),var(--orange2)); }
+    .card-top.c2 { background:linear-gradient(135deg,var(--blue),#A8D8FF); }
+    .card-top.c3 { background:linear-gradient(135deg,var(--green),#A0E890); }
+    .card-top.c4 { background:linear-gradient(135deg,var(--pink),#FFB0C8); }
+    .card-body { padding:16px; }
+    .post-tag {
+      display:inline-block; font-family:'Fredoka One',cursive; font-size:0.68rem;
+      background:var(--pink); border:var(--outline); border-radius:8px;
+      padding:2px 8px; margin-bottom:8px; box-shadow:var(--shadow-sm);
+    }
+    .post-tag.blue { background:var(--blue); }
+    .post-tag.green { background:var(--green); }
+    .post-tag.yellow { background:var(--yellow); }
+    .post-title { font-family:'Fredoka One',cursive; font-size:1rem; line-height:1.3; color:var(--brown); margin-bottom:4px; }
+    .post-zh { font-size:0.78rem; font-weight:700; color:var(--brown-mid); font-style:italic; margin-bottom:8px; }
+    .post-excerpt { font-size:0.82rem; line-height:1.6; color:var(--brown-mid); margin-bottom:10px; }
+    .post-meta { font-size:0.72rem; font-weight:700; color:var(--brown-mid); opacity:0.7; }
+
+    /* ABOUT */
+    .about-box {
+      background:var(--orange2); border:var(--outline); border-radius:24px;
+      padding:32px; box-shadow:var(--shadow);
+      display:grid; grid-template-columns:auto 1fr; gap:24px; align-items:center;
+      max-width:940px; margin:0 auto 44px; position:relative; z-index:1;
+    }
+    .about-avatar {
+      width:80px; height:80px; background:var(--white); border:var(--outline);
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:2.8rem; box-shadow:var(--shadow-sm); flex-shrink:0;
+      animation:wiggle 3s ease-in-out infinite;
+    }
+    .about-text h3 { font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--brown); margin-bottom:6px; }
+    .about-text p { font-size:0.9rem; line-height:1.65; color:var(--brown); }
+    .about-text .zh { font-size:0.84rem; font-style:italic; color:var(--brown-mid); margin-top:6px; }
+
+    /* ── BLOG LIST PAGE ── */
+    .blog-list { max-width:720px; margin:0 auto; padding:44px 20px; }
+    .blog-list-title { font-family:'Fredoka One',cursive; font-size:2rem; color:var(--brown); margin-bottom:8px; }
+    .blog-list-sub { font-size:0.9rem; color:var(--brown-mid); margin-bottom:32px; }
+    .blog-item {
+      background:var(--white); border:var(--outline); border-radius:18px;
+      padding:20px 24px; margin-bottom:16px; cursor:pointer;
+      box-shadow:var(--shadow-sm); transition:transform 0.15s, box-shadow 0.15s;
+      display:flex; gap:16px; align-items:flex-start;
+    }
+    .blog-item:hover { transform:translate(-2px,-2px); box-shadow:5px 5px 0 rgba(139,106,74,0.3); }
+    .blog-item-emoji { font-size:2.2rem; flex-shrink:0; margin-top:2px; }
+    .blog-item-tag { display:inline-block; font-family:'Fredoka One',cursive; font-size:0.65rem; background:var(--yellow); border:var(--outline); border-radius:6px; padding:1px 8px; margin-bottom:6px; }
+    .blog-item-title { font-family:'Fredoka One',cursive; font-size:1.05rem; color:var(--brown); margin-bottom:4px; line-height:1.3; }
+    .blog-item-excerpt { font-size:0.85rem; color:var(--brown-mid); line-height:1.6; margin-bottom:8px; }
+    .blog-item-meta { font-size:0.72rem; font-weight:700; color:var(--brown-mid); opacity:0.65; }
+    #posts-loading { text-align:center; padding:40px; font-family:'Fredoka One',cursive; font-size:1.1rem; color:var(--brown-mid); }
+
+    /* ── ARTICLE PAGE ── */
+    .article-wrap { max-width:720px; margin:0 auto; padding:44px 20px; }
+    .article-back {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family:'Fredoka One',cursive; font-size:0.9rem;
+      color:var(--orange); cursor:pointer; margin-bottom:28px;
+      border:var(--outline); border-radius:10px; padding:6px 14px;
+      background:var(--white); box-shadow:var(--shadow-sm);
+      transition:transform 0.1s;
+    }
+    .article-back:hover { transform:translateX(-3px); }
+    .article-header { margin-bottom:28px; }
+    .article-tag { display:inline-block; font-family:'Fredoka One',cursive; font-size:0.72rem; background:var(--yellow); border:var(--outline); border-radius:8px; padding:2px 10px; margin-bottom:10px; }
+    .article-title { font-family:'Fredoka One',cursive; font-size:1.9rem; line-height:1.2; color:var(--brown); margin-bottom:8px; }
+    .article-meta { font-size:0.78rem; font-weight:700; color:var(--brown-mid); opacity:0.7; }
+    .article-divider { border:none; border-top:2px dashed rgba(139,106,74,0.25); margin:20px 0; }
+    .article-body { font-size:1rem; line-height:1.8; color:var(--brown); }
+    .article-body h1,.article-body h2 { font-family:'Fredoka One',cursive; color:var(--brown); margin:28px 0 10px; }
+    .article-body h1 { font-size:1.5rem; }
+    .article-body h2 { font-size:1.2rem; color:var(--orange); }
+    .article-body p { margin-bottom:16px; }
+    .article-body em { color:var(--orange); font-style:normal; font-weight:700; }
+    .article-body hr { border:none; border-top:2px dashed rgba(139,106,74,0.2); margin:24px 0; }
+    .article-body blockquote { background:var(--yellow); border-left:4px solid var(--orange); border-radius:0 12px 12px 0; padding:12px 18px; margin:16px 0; font-style:italic; }
+
+    /* FOOTER */
+    footer { background:var(--brown); border-top:var(--outline); padding:20px; text-align:center; position:relative; z-index:1; }
+    footer p { font-family:'Fredoka One',cursive; font-size:0.9rem; color:var(--orange2); }
+    footer .paws { font-size:1.1rem; margin-top:4px; }
+
+    /* ANIMATIONS */
+    @keyframes popIn { from{opacity:0;transform:scale(0.88) translateY(14px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    @keyframes wiggle { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-8deg)} 40%{transform:rotate(8deg)} 60%{transform:rotate(-4deg)} 80%{transform:rotate(4deg)} }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    /* RESPONSIVE */
+    @media(max-width:680px){
+      .hero{grid-template-columns:1fr;}
+      .hero-bubble::after,.hero-bubble::before{display:none;}
+      .cards-grid{grid-template-columns:1fr;}
+      .about-box{grid-template-columns:1fr;text-align:center;}
+      nav a{padding:4px 10px;font-size:0.78rem;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a class="logo" onclick="showPage('home')">
+      <span class="logo-cat">🐱</span> Jimmy the Orange Cat
+    </a>
+    <nav>
+      <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+      <a onclick="showPage('blog')" id="nav-blog">Blog</a>
+      <a onclick="showPage('about')" id="nav-about">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══ HOME PAGE ══ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-bubble">
+      <span class="badge">🧡 Just for Esther & Sarah</span>
+      <h1 class="hero-title">This space is<br><span class="accent">completely</span> yours 💛</h1>
+      <p class="hero-desc">A private little corner made with love — for you to write whatever is on your heart. No rules. No grades. Just you.</p>
+      <a class="btn" onclick="showPage('blog')">Read Posts 💛</a>
+    </div>
+    <div class="hero-card-stack">
+      <div class="info-card ic-top">
+        <div class="ic-emoji">✍️</div>
+        <div><div class="ic-label">Writers</div><div class="ic-val">Esther & Sarah</div></div>
+      </div>
+      <div class="info-card ic-mid">
+        <div class="ic-emoji">🔒</div>
+        <div><div class="ic-label">This blog is</div><div class="ic-val">Private & just for you</div></div>
+      </div>
+      <div class="info-card ic-bot">
+        <div class="ic-emoji">🧡</div>
+        <div><div class="ic-label">Made with love by</div><div class="ic-val">Mum</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider">
+    <svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="36">
+      <path d="M0,25 C200,50 400,0 600,25 C800,50 1000,0 1200,25 L1200,50 L0,50 Z" fill="#FF7A1F"/>
+    </svg>
+  </div>
+  <div class="color-band">
+    <span class="band-item">✍️ Write anything</span>
+    <span class="band-item">💭 Your thoughts</span>
+    <span class="band-item">💛 Your feelings</span>
+    <span class="band-item">🌟 Your dreams</span>
+    <span class="band-item">🐾 Your stories</span>
+  </div>
+  <div class="wave-divider" style="transform:scaleY(-1);margin-bottom:-2px;">
+    <svg viewBox="0 0 1200 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="36">
+      <path d="M0,25 C200,50 400,0 600,25 C800,50 1000,0 1200,25 L1200,50 L0,50 Z" fill="#FF7A1F"/>
+    </svg>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-emoji">💛</span>
+      <h2 class="section-title">Latest Posts</h2>
+    </div>
+    <div class="cards-grid" id="home-posts">
+      <!-- filled by JS -->
+    </div>
+  </section>
+
+  <div class="about-box">
+    <div class="about-avatar">🧡</div>
+    <div class="about-text">
+      <h3>A note from Mum 💛</h3>
+      <p>Hey Esther, hey Sarah. I made this little corner of the internet just for you two. No rules here. No grades. No one looking over your shoulder.</p>
+      <p>This is your space to write whatever is on your heart — your thoughts, your feelings, the funny things that happened today, the things you can't quite say out loud, the dreams you're still figuring out.</p>
+      <p>I love you both so much. 🧡 — Mum</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BLOG LIST PAGE ══ -->
+<div class="page" id="page-blog">
+  <div class="blog-list">
+    <h1 class="blog-list-title">💛 All Posts</h1>
+    <p class="blog-list-sub">Everything Esther and Sarah have written. This space is completely yours. 🐾</p>
+    <div id="posts-loading">Loading posts... 🐱</div>
+    <div id="posts-list"></div>
+  </div>
+</div>
+
+<!-- ══ ARTICLE PAGE ══ -->
+<div class="page" id="page-article">
+  <div class="article-wrap">
+    <div class="article-back" onclick="showPage('blog')">← Back to Blog</div>
+    <div class="article-header">
+      <div class="article-tag" id="article-tag"></div>
+      <h1 class="article-title" id="article-title"></h1>
+      <p class="article-meta" id="article-meta"></p>
+    </div>
+    <hr class="article-divider"/>
+    <div class="article-body" id="article-body"></div>
+  </div>
+</div>
+
+<!-- ══ ABOUT PAGE ══ -->
+<div class="page" id="page-about">
+  <div class="article-wrap">
+    <h1 class="blog-list-title" style="margin-bottom:24px">About This Blog 🧡</h1>
+    <div class="about-box" style="margin:0 0 32px">
+      <div class="about-avatar">🐱</div>
+      <div class="about-text">
+        <h3>Made by Mum, for Esther & Sarah 🧡</h3>
+        <p>This is a private blog made with love — a safe little space just for the two of you to write freely.</p>
+      </div>
+    </div>
+    <div class="article-body">
+      <h2>Why I made this for you</h2>
+      <p>I know life gets busy and we don't always get to sit down and talk the way I'd like to. I hope this blog can be a place where you put things down — not for anyone else, but for yourself.</p>
+      <p>Writing has a way of helping us understand what we're feeling, even when things feel confusing or hard.</p>
+      <h2>This is completely yours</h2>
+      <p>What you write here belongs to you. You can write about anything — big things, small things, happy things, hard things. You don't have to be a good writer. You just have to be honest.</p>
+      <p>I love you both so much. 🧡 — Mum</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 — made with 🧡 by Mum, for Esther & Sarah</p>
+  <div class="paws">🐾 🐾 🐾 🐾 🐾</div>
+</footer>
+
+<script>
+  // ── CONFIG ── change this to your GitHub username/repo
+  const GITHUB_USER = 'melonsmile611';
+  const GITHUB_REPO = 'jimmytheorangecat';
+  const BRANCH = 'main';
+
+  // ── COLOUR CYCLE ──
+  const COLORS = ['c1','c2','c3','c4'];
+  const TAG_COLORS = ['','blue','green','yellow'];
+
+  // ── PAGE NAV ──
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const navEl = document.getElementById('nav-' + name);
+    if (navEl) navEl.classList.add('active');
+    window.scrollTo(0,0);
+    if (name === 'blog') loadPosts();
+  }
+
+  // ── SIMPLE MARKDOWN PARSER ──
+  function parseMarkdown(md) {
+    // strip frontmatter
+    md = md.replace(/^---[\s\S]*?---\n/, '');
+    return md
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^---$/gm, '<hr>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[h|b|h|e|p])(.+)$/gm, '$1')
+      .replace(/^<\/p><p>$/, '')
+      .replace(/(^|\n)(?!<)([^\n<][^\n]*)(?=\n|$)/g, '$1<p>$2</p>');
+  }
+
+  // ── PARSE FRONTMATTER ──
+  function parseFrontmatter(text) {
+    const match = text.match(/^---\n([\s\S]*?)\n---/);
+    if (!match) return {};
+    const obj = {};
+    match[1].split('\n').forEach(line => {
+      const [k, ...v] = line.split(':');
+      if (k) obj[k.trim()] = v.join(':').trim().replace(/^"|"$/g, '');
+    });
+    return obj;
+  }
+
+  // ── FETCH POST LIST FROM GITHUB ──
+  async function loadPosts() {
+    const listEl = document.getElementById('posts-list');
+    const loadEl = document.getElementById('posts-loading');
+    listEl.innerHTML = '';
+    loadEl.style.display = 'block';
+    loadEl.textContent = 'Loading posts... 🐱';
+
+    try {
+      const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/posts?ref=${BRANCH}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Cannot reach GitHub');
+      const files = await res.json();
+
+      const mdFiles = files.filter(f => f.name.endsWith('.md')).reverse();
+      if (mdFiles.length === 0) {
+        loadEl.textContent = 'No posts yet — coming soon! 🐾';
+        return;
+      }
+      loadEl.style.display = 'none';
+
+      // fetch each file's content
+      const posts = await Promise.all(mdFiles.map(async (f, i) => {
+        const r = await fetch(f.download_url);
+        const text = await r.text();
+        const fm = parseFrontmatter(text);
+        return { ...fm, filename: f.name, index: i };
+      }));
+
+      // render blog list
+      posts.forEach((p, i) => {
+        const el = document.createElement('div');
+        el.className = 'blog-item';
+        el.innerHTML = `
+          <div class="blog-item-emoji">${p.emoji || '📝'}</div>
+          <div>
+            <span class="blog-item-tag">${p.tag || 'Post'}</span>
+            <div class="blog-item-title">${p.title || p.filename}</div>
+            <div class="blog-item-excerpt">${p.excerpt || ''}</div>
+            <div class="blog-item-meta">📅 ${p.date || ''}</div>
+          </div>`;
+        el.onclick = () => openPost(p.filename);
+        listEl.appendChild(el);
+      });
+
+      // also populate home page cards (first 3)
+      const homeEl = document.getElementById('home-posts');
+      if (homeEl) {
+        homeEl.innerHTML = '';
+        posts.slice(0,3).forEach((p, i) => {
+          const el = document.createElement('div');
+          el.className = 'post-card';
+          el.style.animationDelay = (i * 0.1) + 's';
+          el.innerHTML = `
+            <div class="card-top ${COLORS[i % COLORS.length]}">${p.emoji || '📝'}</div>
+            <div class="card-body">
+              <span class="post-tag ${TAG_COLORS[i % TAG_COLORS.length]}">${p.tag || 'Post'}</span>
+              <div class="post-title">${p.title || p.filename}</div>
+              <div class="post-excerpt">${p.excerpt || ''}</div>
+              <div class="post-meta">📅 ${p.date || ''}</div>
+            </div>`;
+          el.onclick = () => openPost(p.filename);
+          homeEl.appendChild(el);
+        });
+      }
+
+    } catch(e) {
+      loadEl.textContent = '⚠️ Could not load posts. Check back soon! 🐾';
+      console.error(e);
+    }
+  }
+
+  // ── OPEN A POST ──
+  async function openPost(filename) {
+    showPage('article');
+    document.getElementById('article-title').textContent = 'Loading... 🐱';
+    document.getElementById('article-body').innerHTML = '';
+
+    try {
+      const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/posts/${filename}`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const fm = parseFrontmatter(text);
+
+      document.getElementById('article-tag').textContent = fm.tag || 'Post';
+      document.getElementById('article-title').textContent = fm.title || filename;
+      document.getElementById('article-meta').textContent = `📅 ${fm.date || ''}`;
+
+      const body = text.replace(/^---[\s\S]*?---\n/, '');
+      document.getElementById('article-body').innerHTML = parseMarkdown(body);
+    } catch(e) {
+      document.getElementById('article-body').innerHTML = '<p>Could not load this post. 😿</p>';
+    }
+  }
+
+  // load home posts on start
+  loadPosts();
+</script>
+</body>
+</html>
