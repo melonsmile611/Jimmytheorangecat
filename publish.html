@@ -157,49 +157,24 @@
 <header>
   <div class="nav-inner">
     <div class="logo"><span>🐱</span> Jimmy's Blog — <span id="author-name">Write a Post</span></div>
+    <button onclick="logout()" style="font-family:'Fredoka One',cursive;font-size:0.8rem;background:rgba(255,255,255,0.2);color:white;border:2px solid rgba(255,255,255,0.4);border-radius:20px;padding:4px 14px;cursor:pointer;">Log out</button>
   </div>
 </header>
 
 <div class="wrap">
-
-  <div class="setup-card">
-    <div class="setup-title">🔑 GitHub Setup <span style="font-size:0.78rem;font-weight:700;color:var(--mid)">(one time only)</span></div>
-    <div class="setup-row">
-      <input class="setup-input" type="password" id="token-input" placeholder="Paste your GitHub token here..."/>
-      <button class="setup-btn" onclick="saveToken()">Save 🐾</button>
-    </div>
-    <div class="setup-saved" id="setup-saved">✅ Token saved! You're all set.</div>
-  </div>
 
   <div class="form-card">
     <div class="form-title">✍️ Hey <span id="author-greeting"></span>, write a new post!</div>
 
     <div class="field">
       <label>Post Title</label>
-      <input type="text" id="post-title" placeholder="e.g. How I used AI to write my homework..."/>
-    </div>
-
-    <div class="field">
-      <label>Category</label>
-      <div class="tag-row">
-        <span class="tag-pill selected" data-tag="Beginner · 入门" onclick="pickTag(this)">Beginner 入门</span>
-        <span class="tag-pill" data-tag="Tools · 工具" onclick="pickTag(this)">Tools 工具</span>
-        <span class="tag-pill" data-tag="Mobile · 手机" onclick="pickTag(this)">Mobile 手机</span>
-        <span class="tag-pill" data-tag="Tips · 技巧" onclick="pickTag(this)">Tips 技巧</span>
-        <span class="tag-pill" data-tag="Story · 故事" onclick="pickTag(this)">Story 故事</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>One-line Summary</label>
-      <p class="field-note">Shows on the blog list. Keep it short!</p>
-      <input type="text" id="post-excerpt" placeholder="e.g. What I learned trying AI for the first time."/>
+      <input type="text" id="post-title" placeholder="e.g. Today was a good day..."/>
     </div>
 
     <div class="field">
       <label>Content</label>
       <p class="field-note">Use ## for headings, --- for dividers, **bold** for bold.</p>
-      <textarea id="post-content" placeholder="Write your post here..."></textarea>
+      <textarea id="post-content" placeholder="Write whatever is on your heart..."></textarea>
     </div>
 
     <div class="field">
@@ -214,24 +189,9 @@
       </div>
     </div>
 
-    <button class="preview-toggle" onclick="togglePreview()">👁 Preview</button>
-    <div class="preview-box" id="preview-box"></div>
-
     <button class="publish-btn" id="publish-btn" onclick="publishPost()">🚀 Publish Post!</button>
     <div class="status" id="status"></div>
   </div>
-
-  <div class="tips">
-    <div class="tips-title">🐱 Writing Tips</div>
-    <ul>
-      <li>Use <strong>##</strong> at the start of a line to make a heading</li>
-      <li>Use <strong>---</strong> on its own line to add a divider</li>
-      <li>Use <strong>**bold**</strong> to make words bold</li>
-      <li>Write in English, Chinese, or mix both!</li>
-      <li>Your post appears on the blog within seconds 🎉</li>
-    </ul>
-  </div>
-</div>
 
 <script>
   const GITHUB_USER = 'melonsmile611';
@@ -244,7 +204,7 @@
   };
 
   let selectedEmoji = '💬';
-  let selectedTag   = 'Beginner · 入门';
+  let selectedTag   = 'My Day';
   let selectedVis   = 'public';
 
   // PASSWORD CHECK
@@ -264,6 +224,12 @@
       requestAnimationFrame(() => { card.style.animation = 'shake 0.4s ease'; });
       document.getElementById('pw-input').value = '';
     }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('unlocked');
+    sessionStorage.removeItem('author');
+    location.reload();
   }
 
   function setAuthorUI(name) {
