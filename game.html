@@ -165,6 +165,51 @@
         .lion .record-btn { background: linear-gradient(135deg, #FF8C42, #ff6b6b); }
         .dolphin .record-btn { background: linear-gradient(135deg, #45B7D1, #4ecdc4); }
         .whale .record-btn { background: linear-gradient(135deg, #5B7CF9, #6c5ce7); }
+        .leaves .record-btn { background: linear-gradient(135deg, #FF8C42, #d4823a); }
+        .mission-card.leaves { border-top: 4px solid #d4823a; }
+
+        /* LEAF GAME — falling-leaf play area (replaces canvas) */
+        .visualizer-container.leaf-game {
+            height: 160px;
+            background: linear-gradient(180deg, #FFE4B5 0%, #FFCC80 60%, #8B5E3C 100%);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #8B5E3C;
+        }
+        .leaf-stage {
+            position: relative; width: 100%; height: 100%;
+        }
+        .leaf {
+            position: absolute;
+            top: 8%; left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.6rem;
+            transition: top 0.15s linear;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            z-index: 2;
+            animation: leaf-sway 2s ease-in-out infinite;
+        }
+        @keyframes leaf-sway {
+            0%, 100% { transform: translateX(-50%) rotate(-6deg); }
+            50%      { transform: translateX(-50%) rotate(6deg); }
+        }
+        .basket {
+            position: absolute;
+            bottom: 6px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.4rem;
+            z-index: 1;
+        }
+        .leaf-progress {
+            position: absolute;
+            top: 0; left: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, #d4823a, #FF8C42);
+            transition: width 0.1s linear;
+            z-index: 3;
+            border-radius: 0 2px 2px 0;
+        }
 
         .record-btn.recording {
             background: #ff6b6b !important;
@@ -276,7 +321,7 @@
                 <div class="progress-fill" id="totalProgress"></div>
             </div>
             <p style="font-size: 0.8rem; opacity: 0.8;">
-                <span id="sessionLabel">Morning</span> Progress: <span id="progressText">0/30</span>
+                <span id="sessionLabel">Morning</span> Progress: <span id="progressText">0/40</span>
             </p>
         </header>
 
@@ -297,7 +342,7 @@
                 <li><strong>LOUD:</strong> Speak with normal, strong volume</li>
                 <li><strong>INTENT:</strong> Consciously control your voice muscles</li>
                 <li><strong>REPEAT:</strong> Complete each exercise 10 times</li>
-                <li><strong>GOAL:</strong> 3 missions × 10 reps = 30 reps/<span id="instSession2">Morning</span></li>
+                <li><strong>GOAL:</strong> 4 missions × 10 reps = 40 reps/<span id="instSession2">Morning</span></li>
             </ul>
         </div>
 
@@ -384,6 +429,37 @@
 
                 <div class="badge-container" id="whale-badges"></div>
             </div>
+
+            <!-- Leaves -->
+            <div class="mission-card leaves">
+                <span class="animal-emoji">🍂</span>
+                <h3 class="mission-title">Catching the Leaves</h3>
+                <p class="mission-desc">Sing "Aaaah" loudly to make the leaf fall into the basket!<br>Practice sustained, strong voice 🍁</p>
+
+                <div class="visualizer-container leaf-game" id="leaves-viz">
+                    <div class="leaf-stage">
+                        <div class="leaf" id="leaf">🍂</div>
+                        <div class="basket" id="basket">🧺</div>
+                        <div class="leaf-progress" id="leaf-progress"></div>
+                    </div>
+                </div>
+
+                <div class="volume-bar"><div class="volume-fill" id="leaves-volume"></div></div>
+                <p class="volume-label">Sustain Loud Voice</p>
+
+                <p class="status-text" id="leaves-status">Tap to start catching leaves 🍂</p>
+
+                <div class="counter">
+                    <button class="btn btn-minus" onclick="event.stopPropagation();adjustCount('leaves', -1)">−</button>
+                    <span class="count-display" id="leaves-count">0</span>
+                    <span style="color:#adb5bd; font-size:1rem;">/10</span>
+                    <button class="btn btn-plus" onclick="event.stopPropagation();adjustCount('leaves', 1)">+</button>
+                </div>
+
+                <button class="record-btn" id="leaves-btn" type="button">🎤 Tap to Start</button>
+
+                <div class="badge-container" id="leaves-badges"></div>
+            </div>
         </div>
 
         <div class="daily-summary">
@@ -422,8 +498,11 @@
         var missions = {
             lion: { am: 0, pm: 0, target: 10, name: 'Lion King' },
             dolphin: { am: 0, pm: 0, target: 10, name: 'Dolphin' },
-            whale: { am: 0, pm: 0, target: 10, name: 'Blue Whale' }
+            whale: { am: 0, pm: 0, target: 10, name: 'Blue Whale' },
+            leaves: { am: 0, pm: 0, target: 10, name: 'Leaves' }
         };
+        var missionTypes = ['lion', 'dolphin', 'whale', 'leaves'];
+        var leafState = { progress: 0, active: false, threshold: 30 };
 
         // ===== Switch Morning/Afternoon =====
         function switchSession(session) {
@@ -436,7 +515,7 @@
             document.getElementById('instSession').textContent = label;
             document.getElementById('instSession2').textContent = label;
 
-            ['lion', 'dolphin', 'whale'].forEach(function(t) {
+            missionTypes.forEach(function(t) {
                 var saved = localStorage.getItem(t + '_day_' + currentDay + '_' + session);
                 missions[t][session] = saved ? parseInt(saved) : 0;
                 document.getElementById(t + '-count').textContent = missions[t][session];
@@ -456,7 +535,7 @@
             setupModal();
 
             setInterval(function() {
-                ['lion', 'dolphin', 'whale'].forEach(function(t) {
+                missionTypes.forEach(function(t) {
                     localStorage.setItem(t + '_day_' + currentDay + '_' + currentSession, missions[t][currentSession]);
                 });
             }, 3000);
@@ -539,9 +618,9 @@
         }
 
         function updateProgress() {
-            var total = missions.lion[currentSession] + missions.dolphin[currentSession] + missions.whale[currentSession];
-            document.getElementById('totalProgress').style.width = (total / 30 * 100) + '%';
-            document.getElementById('progressText').textContent = total + '/30';
+            var total = missionTypes.reduce(function(sum, t) { return sum + missions[t][currentSession]; }, 0);
+            document.getElementById('totalProgress').style.width = (total / 40 * 100) + '%';
+            document.getElementById('progressText').textContent = total + '/40';
         }
 
         function checkCompletion(type) {
@@ -549,7 +628,8 @@
                 var msgs = {
                     lion: { emoji: '🦁', title: 'ROAR! Lion King Conquered!', text: 'The boulder is shattered! You earned the Power Badge!' },
                     dolphin: { emoji: '🐬', title: 'SPLASH! Dolphin Soared!', text: 'Perfect ring jump! You earned the Agility Badge!' },
-                    whale: { emoji: '🐳', title: 'DEEP DIVE! Treasure Found!', text: 'The ancient chest opens! You earned the Depth Badge!' }
+                    whale: { emoji: '🐳', title: 'DEEP DIVE! Treasure Found!', text: 'The ancient chest opens! You earned the Depth Badge!' },
+                    leaves: { emoji: '🍂', title: 'LEAF BASKET FULL!', text: 'All the leaves caught! You earned the Wind Whisperer Badge!' }
                 };
                 var key = 'shown_' + type + '_' + currentDay + '_' + currentSession;
                 if (!localStorage.getItem(key)) {
@@ -559,10 +639,10 @@
                 }
             }
 
-            var amTotal = missions.lion.am + missions.dolphin.am + missions.whale.am;
-            var pmTotal = missions.lion.pm + missions.dolphin.pm + missions.whale.pm;
+            var amTotal = missionTypes.reduce(function(sum, t) { return sum + missions[t].am; }, 0);
+            var pmTotal = missionTypes.reduce(function(sum, t) { return sum + missions[t].pm; }, 0);
 
-            if (amTotal === 30 && pmTotal === 30) {
+            if (amTotal === 40 && pmTotal === 40) {
                 var allKey = 'allShown_' + currentDay;
                 if (!localStorage.getItem(allKey)) {
                     setTimeout(function() {
@@ -656,9 +736,22 @@
                     }, 100);
                 }
 
+                if (type === 'leaves') {
+                    leafState.progress = 0;
+                    leafState.active = true;
+                    var leafEl = document.getElementById('leaf');
+                    if (leafEl) {
+                        leafEl.style.transition = 'top 0.15s';
+                        leafEl.style.top = '8%';
+                    }
+                    var progEl = document.getElementById('leaf-progress');
+                    if (progEl) progEl.style.width = '0%';
+                    status.textContent = '🍂 Sing "Aaaah" loudly — keep it going!';
+                }
+
                 drawVisualizer(type);
 
-                var duration = type === 'lion' ? 15000 : 5000;
+                var duration = type === 'lion' ? 15000 : type === 'leaves' ? 15000 : 5000;
                 autoStop = setTimeout(function() {
                     if (isRecording && activeType === type) {
                         stopRecording(type);
@@ -694,6 +787,24 @@
             var viz = document.getElementById(type + '-viz');
             var volume = document.getElementById(type + '-volume');
 
+            if (type === 'leaves') {
+                btn.textContent = '🎤 Tap to Start';
+                btn.classList.remove('recording');
+                leafState.progress = 0;
+                leafState.active = false;
+                var leafEl = document.getElementById('leaf');
+                if (leafEl) { leafEl.style.transition = 'top 0.3s'; leafEl.style.top = '8%'; }
+                var progEl = document.getElementById('leaf-progress');
+                if (progEl) progEl.style.width = '0%';
+                if (status.textContent.indexOf('Caught') === -1) {
+                    status.textContent = 'Tap to start catching leaves 🍂';
+                }
+                status.className = 'status-text';
+                volume.style.width = '0%';
+                setTimeout(function() { adjustCount(type, 0); }, 50);
+                return;
+            }
+
             btn.textContent = '🎤 Tap to Record';
             btn.classList.remove('recording');
             status.textContent = 'Done! +1 rep 🌟';
@@ -711,23 +822,30 @@
         // ===== Unified Visualizer =====
         function drawVisualizer(type) {
             var canvas = document.getElementById(type + '-canvas');
-            var ctx = canvas.getContext('2d');
+            var ctx = canvas ? canvas.getContext('2d') : null;
             var volumeBar = document.getElementById(type + '-volume');
 
-            var rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width || 300;
-            canvas.height = rect.height || 80;
-
-            var bufferLength = analyserNode.frequencyBinCount;
-            var dataArray = new Uint8Array(bufferLength);
+            var rect, bufferLength, dataArray;
+            if (canvas) {
+                rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width || 300;
+                canvas.height = rect.height || 80;
+                bufferLength = analyserNode.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+            } else {
+                bufferLength = analyserNode.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+            }
 
             var colorScheme;
             if (type === 'lion') {
                 colorScheme = { hueStart: 30, hueEnd: 0, sat: 85 };
             } else if (type === 'dolphin') {
                 colorScheme = { hueStart: 200, hueEnd: 120, sat: 80 };
-            } else {
+            } else if (type === 'whale') {
                 colorScheme = { hueStart: 280, hueEnd: 180, sat: 75 };
+            } else {
+                colorScheme = { hueStart: 90, hueEnd: 30, sat: 70 };
             }
 
             function draw() {
@@ -736,14 +854,52 @@
 
                 analyserNode.getByteFrequencyData(dataArray);
 
-                ctx.fillStyle = '#1a1a2e';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
                 var sum = 0;
                 for (var i = 0; i < bufferLength; i++) sum += dataArray[i];
                 var avg = sum / bufferLength;
                 var volumePercent = Math.min((avg / 128) * 100, 100);
                 volumeBar.style.width = volumePercent + '%';
+
+                // LEAF GAME — skip canvas, animate falling leaf
+                if (type === 'leaves') {
+                    var leafEl = document.getElementById('leaf');
+                    var progEl = document.getElementById('leaf-progress');
+                    if (volumePercent > leafState.threshold) {
+                        leafState.progress = Math.min(100, leafState.progress + 1.2);
+                    } else {
+                        leafState.progress = Math.max(0, leafState.progress - 0.6);
+                    }
+                    var topPct = 8 + (leafState.progress * 0.68);
+                    if (leafEl) leafEl.style.top = topPct + '%';
+                    if (progEl) progEl.style.width = leafState.progress + '%';
+
+                    if (leafState.progress >= 100) {
+                        // Caught!
+                        leafState.progress = 0;
+                        if (leafEl) {
+                            leafEl.style.transition = 'top 0.25s ease-in';
+                            leafEl.style.top = '78%';
+                            setTimeout(function() {
+                                leafEl.style.transition = 'top 0.15s';
+                                leafEl.style.top = '8%';
+                            }, 250);
+                        }
+                        if (progEl) progEl.style.width = '0%';
+                        stopRecording('leaves');
+                        adjustCount('leaves', 1);
+                        var statusEl = document.getElementById('leaves-status');
+                        if (statusEl) {
+                            statusEl.textContent = '🍂 Caught! Beautiful voice! +1 leaf';
+                            statusEl.className = 'status-text success';
+                        }
+                        return;
+                    }
+                    return;
+                }
+
+                // Canvas visualizer (lion / dolphin / whale)
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 var barWidth = (canvas.width / bufferLength) * 2.5;
                 var x = 0;
@@ -778,10 +934,10 @@
 
         // ===== Button Events =====
         function setupButtons() {
-            var types = ['lion', 'dolphin', 'whale'];
-            for (var i = 0; i < types.length; i++) {
+            for (var i = 0; i < missionTypes.length; i++) {
                 (function(type) {
                     var btn = document.getElementById(type + '-btn');
+                    if (!btn) return;
                     btn.addEventListener('touchend', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -794,7 +950,7 @@
                         toggleRecord(type);
                         return false;
                     }, false);
-                })(types[i]);
+                })(missionTypes[i]);
             }
         }
 
